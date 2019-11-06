@@ -16,8 +16,8 @@ prev_points = []
 patches = []
 total_points = []
 breaker = False
-# globSelect = None
-# savePath = None
+
+
 class SelectFromCollection(object):
     def __init__(self, ax):
         self.canvas = ax.figure.canvas
@@ -42,7 +42,8 @@ def break_loop(event):
         globSelect.disconnect()
         if os.path.exists(savePath):
             os.remove(savePath)
-            
+
+        print("data saved in "+ savePath + " file")    
         with open(savePath, 'wb') as f:
             pickle.dump(total_points, f, protocol=pickle.HIGHEST_PROTOCOL)
             exit()
@@ -62,18 +63,19 @@ def onkeypress(event):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('video_path', help="Path of video file")
-    parser.add_argument('out_file', help="Name of the output file", default="regions.p")
+    parser.add_argument('--out_file', help="Name of the output file", default="regions.p")
     args = parser.parse_args()
 
     global globSelect
     global savePath
     savePath = args.out_file if args.out_file.endswith(".p") else args.out_file+".p"
 
-    print("\n> Select points in the figure by enclosing them within a polygon.")
-    print("> Press the 'esc' key to discard current polygon.")
+    print("\n> Select a region in the figure by enclosing them within a quadrilateral.")
+    print("> Press the 'f' key to go full screen.")
+    print("> Press the 'esc' key to discard current quadrilateral.")
     print("> Try holding the 'shift' key to move all of the vertices.")
     print("> Try holding the 'ctrl' key to move a single vertex.")
-    print("> After marking a polygon press 'n' to save current polygon and then press 'q' to start marking a new polygon")
+    print("> After marking a quadrilateral press 'n' to save current quadrilateral and then press 'q' to start marking a new quadrilateral")
     print("> When you are done press 'b' to Exit the program\n")
     
     video_capture = cv2.VideoCapture(args.video_path)

@@ -5,8 +5,6 @@ if not os.path.exists("Mask_RCNN"):
     print("Cloning M-RCNN repository...")
     git.Git("./").clone("https://github.com/matterport/Mask_RCNN.git")
 
-# os.chdir("Mask_RCNN/")
-
 import numpy as np
 import cv2
 import Mask_RCNN.mrcnn.config
@@ -42,13 +40,12 @@ if not os.path.exists(COCO_MODEL_PATH):
 model = MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=Config())
 model.load_weights(COCO_MODEL_PATH, by_name=True)
 
-def get_car_boxes(boxes, class_ids):
-    car_boxes = []
+def get_cars(boxes, class_ids):
+    cars = []
     for i, box in enumerate(boxes):
         if class_ids[i] in [3, 8, 6]:
-            car_boxes.append(box)
-
-    return np.array(car_boxes)
+            cars.append(box)
+    return np.array(cars)
 
 def compute_overlaps(parked_car_boxes, car_boxes):
     new_car_boxes = []
@@ -76,7 +73,6 @@ def compute_overlaps(parked_car_boxes, car_boxes):
             polygon_union = polygon1_shape.union(polygon2_shape).area
             IOU = polygon_intersection / polygon_union
             overlaps[i][j] = IOU
-
     return overlaps
 
 
@@ -91,12 +87,8 @@ if __name__ == "__main__":
         parked_car_boxes = pickle.load(f)
 
     VIDEO_SOURCE = args.video_path
-
-
     alpha = 0.6
     video_capture = cv2.VideoCapture(VIDEO_SOURCE)
-
-
     video_FourCC    = cv2.VideoWriter_fourcc('M','J','P','G')
     video_fps       = video_capture.get(cv2.CAP_PROP_FPS)
     video_size      = (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)),
@@ -112,8 +104,8 @@ if __name__ == "__main__":
         rgb_image = frame[:, :, ::-1]
         results = model.detect([rgb_image], verbose=0)
 
-        car_boxes = get_car_boxes(results[0]['rois'], results[0]['class_ids'])
-        overlaps = compute_overlaps(parked_car_boxes, car_boxes)
+        cars = get_cars(results[0]['rois'], results[0]['class_ids'])
+        overlaps = compute_overlaps(parked_car_boxes, cars)
 
         for parking_area, overlap_areas in zip(parked_car_boxes, overlaps):
             max_IoU_overlap = np.max(overlap_areas)

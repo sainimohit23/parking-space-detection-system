@@ -1,4 +1,5 @@
-# Parking
+# Parking Space Detection
+[Medium Article](https://medium.com/the-research-nest/parking-space-detection-using-deep-learning-9fc99a63875e)
 
 ## How to use
 

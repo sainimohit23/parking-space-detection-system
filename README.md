@@ -7,6 +7,9 @@
 * IPython Notebook:
 
 ``` Download the notebook and upload it on google colab. Rest of the instructions are in the notebook. ```
+
+## To run code on local machine
+
 * Create a python virtual environment and install the dependencies using the following command:
 
 ``` pip install -r requirements.txt ```
